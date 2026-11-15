@@ -1,0 +1,36 @@
+---
+/**
+ * Dipikaa's portrait. Uses `site.about.portrait` when provided; otherwise an
+ * elegant monogram, so no stock photo ever stands in for a real person.
+ */
+import { site } from '../config/site';
+import { wheelPoint } from '../lib/geometry';
+interface Props { size?: 'md' | 'lg' }
+const { size = 'md' } = Astro.props;
+const dots = [1, 2, 3, 4, 5, 6, 7, 8, 9].map((d) => wheelPoint(d, 92, 100, 100));
+---
+<div class:list={['portrait', size]}>
+  {site.about.portrait ? (
+    <img src={site.about.portrait} alt={site.about.portraitAlt} width="480" height="600" loading="lazy" decoding="async" />
+  ) : (
+    <svg viewBox="0 0 200 200" role="img" aria-label={`${site.name} monogram`}>
+      <circle cx="100" cy="100" r="99" fill="#0a0f2c" />
+      <circle cx="100" cy="100" r="92" fill="none" stroke="#c9a45c" stroke-opacity="0.6" stroke-width="0.8" />
+      <circle cx="100" cy="100" r="70" fill="none" stroke="#c9a45c" stroke-opacity="0.25" stroke-width="0.6" stroke-dasharray="2 5" />
+      {dots.map((p, i) => <circle cx={p.x} cy={p.y} r={i === 8 ? 3.2 : 1.6} fill={i === 8 ? '#ead8ad' : '#c9a45c'} />)}
+      <text x="100" y="128" text-anchor="middle" font-family="'Cormorant Garamond Variable', Georgia, serif" font-style="italic" font-size="96" fill="#ead8ad">{site.name.charAt(0)}</text>
+    </svg>
+  )}
+</div>
+<style>
+  .portrait { position: relative; margin-inline: auto; }
+  .portrait.md { width: min(260px, 70vw); }
+  .portrait.lg { width: min(380px, 80vw); }
+  .portrait svg { width: 100%; height: auto; filter: drop-shadow(0 20px 40px rgb(10 15 44 / 0.25)); }
+  .portrait img { width: 100%; height: auto; aspect-ratio: 4 / 5; object-fit: cover; border-radius: 999px 999px var(--radius-lg) var(--radius-lg); box-shadow: var(--shadow-lift); }
+  .portrait::after {
+    content: ''; position: absolute; inset: -12px; border-radius: 50%;
+    border: 1px solid rgb(201 164 92 / 0.35); pointer-events: none;
+  }
+  .portrait:has(img)::after { border-radius: 999px 999px calc(var(--radius-lg) + 12px) calc(var(--radius-lg) + 12px); }
+</style>

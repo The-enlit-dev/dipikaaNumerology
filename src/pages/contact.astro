@@ -1,0 +1,244 @@
+---
+/**
+ * Contact & appointments. Contact details come from src/config/site.ts.
+ *
+ * The enquiry form works without any paid service:
+ *  • if `contact.formEndpoint` is set, it POSTs the form data there
+ *    (Formspree, Web3Forms, Netlify Forms, or your own endpoint);
+ *  • otherwise, if `contact.email` is set, it opens the visitor's email app
+ *    with the enquiry pre-filled;
+ *  • otherwise it explains that online enquiries are not yet available.
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Placeholder from '../components/Placeholder.astro';
+import { site } from '../config/site';
+
+const { contact, consultations } = site;
+const channels = [
+  ...(contact.email ? [{ label: 'Email', value: contact.email, href: `mailto:${contact.email}` }] : []),
+  ...contact.channels,
+];
+const mode = contact.formEndpoint ? 'endpoint' : contact.email ? 'mailto' : 'none';
+---
+<BaseLayout
+  title="Contact & Appointments"
+  description={`Get in touch with ${site.name} with a question about numerology or to enquire about a personal reading.`}
+>
+  <section class="contact-hero night stars glow">
+    <div class="container narrow center stack" style="--stack: var(--space-5)">
+      <p class="eyebrow">Contact</p>
+      <h1>Let’s <em>talk</em> numbers</h1>
+      <p class="lede">
+        Have a question about your reading, or interested in a personal consultation? Send a message and
+        {` ${site.name}`} will reply as soon as she can.
+      </p>
+    </div>
+  </section>
+
+  <section class="section paper">
+    <div class="container contact-grid">
+      <aside class="details stack" style="--stack: var(--space-6)">
+        <div>
+          <h2 class="h-side">Contact details</h2>
+          {channels.length ? (
+            <dl class="channel-list">
+              {channels.map((c) => (
+                <div>
+                  <dt>{c.label}</dt>
+                  <dd>{c.href ? <a href={c.href} rel={c.href.startsWith('http') ? 'noopener' : undefined} target={c.href.startsWith('http') ? '_blank' : undefined}>{c.value}</a> : c.value}</dd>
+                </div>
+              ))}
+            </dl>
+          ) : (
+            <Placeholder field="contact.email / contact.channels" hint="Dipikaa’s email address and any other ways to reach her (phone, WhatsApp, Instagram)." />
+          )}
+        </div>
+
+        {(contact.location || site.showPlaceholders) && (
+          <div>
+            <h2 class="h-side">Location</h2>
+            {contact.location ? <p>{contact.location}</p> : <Placeholder field="contact.location" hint="City or region, or e.g. “Online sessions worldwide”. Optional." />}
+          </div>
+        )}
+        {(contact.hours || site.showPlaceholders) && (
+          <div>
+            <h2 class="h-side">Availability</h2>
+            {contact.hours ? <p>{contact.hours}</p> : <Placeholder field="contact.hours" hint="Typical hours or response time. Optional." />}
+          </div>
+        )}
+
+        <div class="appointments card">
+          <h2 class="h-side">Appointments</h2>
+          {consultations.intro ? <p class="muted">{consultations.intro}</p> : <p class="muted">To enquire about a personal reading, use the form and choose “Book a consultation”.</p>}
+          {consultations.offerings.length > 0 && (
+            <ul class="mark-list star">{consultations.offerings.map((o) => <li><strong>{o.title}</strong>{o.details ? ` — ${o.details}` : ''}</li>)}</ul>
+          )}
+          {consultations.bookingUrl ? (
+            <a class="btn btn-gold" href={consultations.bookingUrl} rel="noopener" target="_blank">{consultations.bookingLabel}</a>
+          ) : (
+            <Placeholder field="consultations.bookingUrl" hint="Optional: a booking link (e.g. Calendly) to show a “Book a consultation” button here." />
+          )}
+        </div>
+      </aside>
+
+      <div class="form-col">
+        <form class="enquiry card" data-enquiry data-mode={mode} data-endpoint={contact.formEndpoint ?? ''} data-email={contact.email ?? ''} novalidate>
+          <h2 class="h-form">Send an enquiry</h2>
+          {mode === 'none' && (
+            <Placeholder field="contact.formEndpoint or contact.email" hint="Add an email address (or a form endpoint) so this form can deliver messages." />
+          )}
+          <div class="form-grid">
+            <div class="field">
+              <label for="c-name">Your name</label>
+              <input class="input" id="c-name" name="name" type="text" autocomplete="name" required maxlength="100" aria-describedby="c-name-err" />
+              <p class="field-error" id="c-name-err" hidden></p>
+            </div>
+            <div class="field">
+              <label for="c-email">Email</label>
+              <input class="input" id="c-email" name="email" type="email" autocomplete="email" required maxlength="160" aria-describedby="c-email-err" />
+              <p class="field-error" id="c-email-err" hidden></p>
+            </div>
+            <div class="field">
+              <label for="c-phone">Phone <span class="opt">(optional)</span></label>
+              <input class="input" id="c-phone" name="phone" type="tel" autocomplete="tel" maxlength="40" />
+            </div>
+            <div class="field">
+              <label for="c-topic">Topic</label>
+              <select class="select" id="c-topic" name="topic">
+                <option>General question</option>
+                <option>Book a consultation</option>
+                <option>Question about my reading</option>
+                <option>Something else</option>
+              </select>
+            </div>
+            <div class="field span-2" data-when-topic="Book a consultation" hidden>
+              <label for="c-time">Preferred days or times <span class="opt">(optional)</span></label>
+              <input class="input" id="c-time" name="preferred_time" type="text" maxlength="160" placeholder="e.g. weekday evenings" />
+            </div>
+            <div class="field span-2">
+              <label for="c-message">Message</label>
+              <textarea class="textarea" id="c-message" name="message" required maxlength="3000" aria-describedby="c-message-err"></textarea>
+              <p class="field-error" id="c-message-err" hidden></p>
+            </div>
+            <div class="hp" aria-hidden="true">
+              <label for="c-website">Leave this field empty</label>
+              <input id="c-website" name="website" type="text" tabindex="-1" autocomplete="off" />
+            </div>
+            <label class="consent span-2">
+              <input type="checkbox" name="consent" required aria-describedby="c-consent-err" />
+              <span>I agree that my details may be used to reply to this enquiry. They are not used for anything else. See the <a href="/privacy/">privacy note</a>.</span>
+            </label>
+            <p class="field-error span-2" id="c-consent-err" hidden></p>
+          </div>
+          <div class="form-foot">
+            <button class="btn btn-gold" type="submit">{mode === 'mailto' ? 'Compose email' : 'Send enquiry'}</button>
+            {mode === 'mailto' && <p class="small muted">This opens your email app with your message ready to send.</p>}
+          </div>
+          <div class="form-status" role="status" aria-live="polite" data-status hidden></div>
+        </form>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<script>
+  const form = document.querySelector<HTMLFormElement>('[data-enquiry]');
+  if (form) {
+    const status = form.querySelector<HTMLElement>('[data-status]')!;
+    const topic = form.querySelector<HTMLSelectElement>('#c-topic')!;
+    const timeField = form.querySelector<HTMLElement>('[data-when-topic]')!;
+    topic.addEventListener('change', () => (timeField.hidden = topic.value !== timeField.dataset.whenTopic));
+
+    const setError = (name: string, message: string) => {
+      const input = form.elements.namedItem(name) as HTMLInputElement;
+      const err = form.querySelector<HTMLElement>(`#c-${name}-err`);
+      if (!err) return;
+      err.textContent = message;
+      err.hidden = !message;
+      input.setAttribute('aria-invalid', message ? 'true' : 'false');
+    };
+    const show = (message: string, ok: boolean) => {
+      status.hidden = false;
+      status.textContent = message;
+      status.className = `form-status ${ok ? 'is-ok' : 'is-error'}`;
+    };
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const data = new FormData(form);
+      const get = (k: string) => String(data.get(k) ?? '').trim();
+      if (get('website')) return; // spam trap
+
+      const errors: Record<string, string> = {
+        name: get('name') ? '' : 'Please enter your name.',
+        email: /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(get('email')) ? '' : 'Please enter a valid email address.',
+        message: get('message').length >= 10 ? '' : 'Please write a short message (at least 10 characters).',
+        consent: data.get('consent') ? '' : 'Please confirm we may use your details to reply.',
+      };
+      Object.entries(errors).forEach(([k, v]) => setError(k, v));
+      const firstInvalid = Object.keys(errors).find((k) => errors[k]);
+      if (firstInvalid) {
+        (form.elements.namedItem(firstInvalid) as HTMLElement).focus();
+        return;
+      }
+
+      const mode = form.dataset.mode;
+      if (mode === 'endpoint') {
+        const button = form.querySelector<HTMLButtonElement>('button[type=submit]')!;
+        button.disabled = true;
+        try {
+          data.delete('website');
+          const res = await fetch(form.dataset.endpoint!, { method: 'POST', body: data, headers: { Accept: 'application/json' } });
+          if (!res.ok) throw new Error(String(res.status));
+          form.reset();
+          timeField.hidden = true;
+          show('Thank you — your message has been sent. You will receive a reply by email.', true);
+        } catch {
+          show('Sorry, your message could not be sent. Please try again, or use the contact details on this page.', false);
+        } finally {
+          button.disabled = false;
+        }
+      } else if (mode === 'mailto') {
+        const lines = [
+          get('message'),
+          '',
+          '—',
+          `Name: ${get('name')}`,
+          `Email: ${get('email')}`,
+          get('phone') && `Phone: ${get('phone')}`,
+          get('preferred_time') && `Preferred times: ${get('preferred_time')}`,
+        ].filter((l) => l !== '');
+        const href = `mailto:${form.dataset.email}?subject=${encodeURIComponent(`${get('topic')} — ${get('name')}`)}&body=${encodeURIComponent(lines.join('\n'))}`;
+        window.location.href = href;
+        show('Your email app should open with the message ready. If nothing happens, please email directly using the address on this page.', true);
+      } else {
+        show('Online enquiries are not available just yet. Please check back soon.', false);
+      }
+    });
+  }
+</script>
+
+<style>
+  .contact-hero { position: relative; overflow: hidden; padding-block: var(--space-8); }
+  .contact-grid { display: grid; gap: var(--space-7); }
+  @media (min-width: 60em) { .contact-grid { grid-template-columns: 0.85fr 1.15fr; align-items: start; } }
+  .h-side { font-size: var(--step-2); margin-bottom: var(--space-3); }
+  .channel-list { display: grid; gap: var(--space-3); }
+  .channel-list dt { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: var(--gold-700); }
+  .channel-list dd { margin: 0; font-size: 1.05rem; word-break: break-word; }
+  .appointments > * + * { margin-top: var(--space-4); }
+  .enquiry { padding: clamp(1.25rem, 4vw, 2.5rem); }
+  .enquiry > * + * { margin-top: var(--space-5); }
+  .h-form { font-size: var(--step-3); }
+  .form-grid { display: grid; gap: var(--space-4); }
+  @media (min-width: 40em) { .form-grid { grid-template-columns: 1fr 1fr; } .span-2 { grid-column: span 2; } }
+  .opt { font-weight: 400; color: var(--ink-500); }
+  .hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+  .consent { display: flex; gap: var(--space-3); align-items: flex-start; font-size: 0.9rem; color: var(--ink-700); }
+  .consent input { width: 20px; height: 20px; margin-top: 0.15em; accent-color: var(--gold-600); flex: none; }
+  .form-foot { display: flex; flex-wrap: wrap; gap: var(--space-4); align-items: center; }
+  .form-status { padding: var(--space-3) var(--space-4); border-radius: var(--radius-sm); font-weight: 550; }
+  .form-status.is-ok { background: rgb(47 107 79 / 0.1); color: var(--success); }
+  .form-status.is-error { background: rgb(163 48 47 / 0.08); color: var(--danger); }
+  [hidden] { display: none !important; }
+</style>

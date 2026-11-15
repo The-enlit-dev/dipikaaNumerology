@@ -1,0 +1,54 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { site } from '../config/site';
+---
+<BaseLayout title="Privacy & Disclaimer" description={`How ${site.name} handles your information, and the nature of the numerology readings offered on this site.`}>
+  <section class="page-hero night stars">
+    <div class="container narrow stack" style="--stack: var(--space-4)">
+      <p class="eyebrow">The small print, kept simple</p>
+      <h1>Privacy &amp; <em>disclaimer</em></h1>
+    </div>
+  </section>
+  <section class="section paper">
+    <div class="container narrow prose">
+      <h2>Your reading stays on your device</h2>
+      <p>
+        The numerology calculator runs entirely in your web browser. The name and date of birth you enter are used only to
+        calculate your numbers on your own device; they are <strong>never sent to a server</strong>, and no account is needed.
+      </p>
+      <p>
+        So that you can revisit your reading while you browse, your details are kept in your browser’s
+        <em>session storage</em> for the current tab only. They are erased automatically when you close the tab or
+        window, and you can erase them at any time with “Forget my details now” at the bottom of your reading.
+        No cookies are used for this.
+      </p>
+      <p>PDF reports are also created in your browser and saved directly to your device.</p>
+
+      <h2>Enquiries</h2>
+      <p>
+        If you send an enquiry through the contact page, the details you choose to share (such as your name, email address
+        and message) are used only to reply to you. Depending on how the site is configured, the form either opens your own
+        email app or passes your message to a form-delivery service so that it can reach {site.name}.
+      </p>
+
+      <h2>About the readings</h2>
+      <p>
+        Numerology is a traditional, symbolic practice. The readings on this site are based on the Pythagorean method and
+        on meanings traditionally associated with each number. They are offered for <strong>entertainment, inspiration and
+        self-reflection</strong>.
+      </p>
+      <ul>
+        <li>Readings describe themes and tendencies, not certainties.</li>
+        <li>They do not predict specific events, and are not scientifically established.</li>
+        <li>They are not a substitute for professional medical, legal, financial or psychological advice.</li>
+      </ul>
+      <p>Please use your own judgement, and take only what feels meaningful to you.</p>
+
+      <h2>Questions</h2>
+      <p>If you have any questions about this page, please <a href="/contact/">get in touch</a>.</p>
+    </div>
+  </section>
+</BaseLayout>
+<style>
+  .page-hero { position: relative; padding-block: var(--space-8); }
+</style>

@@ -1,0 +1,62 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Calculator from '../islands/Calculator.tsx';
+import { POSITIONS, POSITION_ORDER } from '../data/positions';
+
+const schema = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebApplication',
+    name: 'Numerology Calculator',
+    applicationCategory: 'LifestyleApplication',
+    operatingSystem: 'Any',
+    offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+    description:
+      'Free numerology calculator for your Life Path, Expression, Soul Urge, Personality, Birthday and Personal Year numbers, with a personal reading and PDF report.',
+  },
+];
+---
+<BaseLayout
+  title="Numerology Calculator — Your Free Personal Reading"
+  description="Calculate your Life Path, Expression, Soul Urge, Personality, Birthday and Personal Year numbers instantly and privately, with a detailed personal reading and downloadable PDF report."
+  schema={schema}
+>
+  <section class="calc-hero night stars glow">
+    <div class="container calc-grid">
+      <div class="calc-intro">
+        <p class="eyebrow">Numerology calculator</p>
+        <h1>Your <em>personal</em> reading</h1>
+        <p class="lede">
+          Enter your full name at birth and your date of birth. Your six core numbers — and what they traditionally
+          mean — will appear below in moments.
+        </p>
+        <ul class="calc-list">
+          {POSITION_ORDER.map((key) => (
+            <li><strong>{POSITIONS[key].name}</strong> <span>{POSITIONS[key].short.toLowerCase()}</span></li>
+          ))}
+        </ul>
+      </div>
+      <div class="calc-form-col">
+        <Calculator client:load />
+      </div>
+    </div>
+    <noscript>
+      <div class="container"><p class="placeholder">The calculator needs JavaScript to run in your browser. Please enable it to see your reading.</p></div>
+    </noscript>
+  </section>
+  <!-- The results dashboard is rendered here, full width, once a reading is calculated. -->
+  <div id="reading" class="reading-anchor"></div>
+</BaseLayout>
+
+<style>
+  .calc-hero { position: relative; overflow: hidden; padding-top: var(--space-8); }
+  .calc-grid { display: grid; gap: var(--space-7); align-items: start; padding-bottom: var(--space-8); }
+  @media (min-width: 60em) { .calc-grid { grid-template-columns: 0.9fr 1.1fr; gap: var(--space-8); } }
+  .calc-intro > * + * { margin-top: var(--space-5); }
+  .calc-intro h1 { font-size: var(--step-5); }
+  .calc-list { list-style: none; padding: 0; display: grid; gap: 0; border-top: 1px solid rgb(220 192 133 / 0.18); }
+  .calc-list li { display: flex; justify-content: space-between; gap: var(--space-4); padding: var(--space-3) 0; border-bottom: 1px solid rgb(220 192 133 / 0.12); }
+  .calc-list strong { font-family: var(--font-display); font-weight: 500; font-size: 1.25rem; color: #fff; }
+  .calc-list span { color: var(--mist-400); font-size: 0.9rem; text-align: right; }
+  @media (max-width: 59.99em) { .calc-list { display: none; } }
+</style>

@@ -1,0 +1,15 @@
+---
+/**
+ * Shows a clearly-marked dashed box for content Dipikaa still needs to supply
+ * (only while `site.showPlaceholders` is true). See src/config/site.ts.
+ */
+import { site } from '../config/site';
+interface Props { field: string; hint: string }
+const { field, hint } = Astro.props;
+---
+{site.showPlaceholders && (
+  <div class="placeholder" role="note">
+    <strong>To be added · {field}</strong>
+    {hint}
+  </div>
+)}

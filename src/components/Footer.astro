@@ -1,0 +1,60 @@
+---
+import LogoMark from './LogoMark.astro';
+import { NAV } from '../config/navigation';
+import { site } from '../config/site';
+const year = new Date().getFullYear();
+---
+<footer class="site-footer night stars">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a class="brand" href="/" aria-label={`${site.name} — home`}>
+          <LogoMark size={44} />
+          <span class="brand-name">{site.name}</span>
+        </a>
+        <p class="muted small">{site.tagline}. Readings are calculated privately in your browser using the traditional Pythagorean method.</p>
+      </div>
+      <nav aria-label="Footer">
+        <h2 class="footer-title">Explore</h2>
+        <ul>
+          <li><a href="/">Home</a></li>
+          {NAV.map((item) => <li><a href={item.href}>{item.label}</a></li>)}
+          <li><a href="/privacy/">Privacy &amp; disclaimer</a></li>
+        </ul>
+      </nav>
+      <div>
+        <h2 class="footer-title">Begin</h2>
+        <p class="small muted">Six numbers, one portrait. It takes less than a minute.</p>
+        <a class="btn btn-gold btn-sm" href="/calculator/">Calculate my numbers</a>
+        {site.social.length > 0 && (
+          <ul class="social">
+            {site.social.map((s) => <li><a href={s.href} rel="me noopener" target="_blank">{s.label}</a></li>)}
+          </ul>
+        )}
+      </div>
+    </div>
+    <p class="disclaimer footer-disclaimer">
+      Numerology is a traditional, symbolic practice. Readings on this site are offered for entertainment, inspiration and
+      self-reflection; they are not scientific predictions and are not a substitute for professional medical, legal,
+      financial or psychological advice.
+    </p>
+    <p class="copyright small muted">© {year} {site.name}. All rights reserved.</p>
+  </div>
+</footer>
+
+<style>
+  .site-footer { position: relative; padding-block: var(--space-8) var(--space-6); border-top: 1px solid rgb(220 192 133 / 0.12); }
+  .footer-grid { display: grid; gap: var(--space-7); grid-template-columns: 1fr; }
+  @media (min-width: 48em) { .footer-grid { grid-template-columns: 1.4fr 1fr 1fr; } }
+  .brand { display: inline-flex; align-items: center; gap: 0.75rem; text-decoration: none; color: var(--gold-300); margin-bottom: var(--space-4); }
+  .brand-name { font-family: var(--font-display); font-style: italic; font-size: 2rem; color: #fff; }
+  .footer-brand p { max-width: 24rem; }
+  .footer-title { font-family: var(--font-body); font-size: 0.75rem; letter-spacing: 0.22em; text-transform: uppercase; color: var(--gold-400); margin-bottom: var(--space-4); font-weight: 650; }
+  ul { list-style: none; padding: 0; display: grid; gap: var(--space-2); }
+  ul a { text-decoration: none; color: var(--mist-200); }
+  ul a:hover { color: var(--gold-300); }
+  .footer-grid > div p + .btn { margin-top: var(--space-4); }
+  .social { margin-top: var(--space-5); }
+  .footer-disclaimer { margin-top: var(--space-8); }
+  .copyright { margin-top: var(--space-5); }
+</style>

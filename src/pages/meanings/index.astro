@@ -1,0 +1,48 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import NumberRing from '../../islands/reading/NumberRing.tsx';
+import { ALL_NUMBERS, NUMBER_MEANINGS } from '../../data/numbers';
+---
+<BaseLayout
+  title="Number Meanings in Numerology — 1 to 9, 11, 22 and 33"
+  description="The traditional meanings of every number in Pythagorean numerology, from 1 (the Pioneer) to the master numbers 11, 22 and 33 — traits, strengths, challenges, relationships and career."
+>
+  <section class="page-hero night stars glow">
+    <div class="container narrow center stack" style="--stack: var(--space-5)">
+      <p class="eyebrow">Number meanings</p>
+      <h1>The character of <em>each number</em></h1>
+      <p class="lede">Nine single digits and three master numbers — each with its own traditional personality.</p>
+    </div>
+  </section>
+  <section class="section paper">
+    <div class="container">
+      <ul class="meanings">
+        {ALL_NUMBERS.map((n) => {
+          const m = NUMBER_MEANINGS[n];
+          return (
+            <li class="reveal">
+              <a href={`/meanings/${n}/`} class="meaning-card">
+                <NumberRing value={n} isMaster={n > 9} size={96} tone="paper" animate={false} />
+                <div>
+                  <p class="mc-label">{n > 9 ? 'Master number' : 'Number'} {n}</p>
+                  <h2>{m.title}</h2>
+                  <p class="muted small">{m.keywords.join(' · ')}</p>
+                </div>
+              </a>
+            </li>
+          );
+        })}
+      </ul>
+    </div>
+  </section>
+</BaseLayout>
+<style>
+  .page-hero { position: relative; overflow: hidden; padding-block: var(--space-8); }
+  .meanings { list-style: none; padding: 0; display: grid; gap: var(--space-3); }
+  @media (min-width: 40em) { .meanings { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 64em) { .meanings { grid-template-columns: repeat(3, 1fr); } }
+  .meaning-card { display: flex; gap: var(--space-4); align-items: center; padding: var(--space-4); background: #fff; border: 1px solid var(--cream-200); border-radius: var(--radius); text-decoration: none; height: 100%; transition: border-color 0.3s, transform 0.3s var(--ease), box-shadow 0.3s; }
+  .meaning-card:hover { border-color: var(--gold-500); transform: translateY(-2px); box-shadow: var(--shadow-lift); }
+  .meaning-card h2 { font-size: var(--step-2); }
+  .mc-label { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: var(--gold-700); }
+</style>

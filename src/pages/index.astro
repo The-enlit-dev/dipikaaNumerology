@@ -1,0 +1,242 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import HeroWheel from '../components/HeroWheel.astro';
+import Portrait from '../components/Portrait.astro';
+import Placeholder from '../components/Placeholder.astro';
+import QuickReading from '../islands/QuickReading.tsx';
+import { POSITIONS, POSITION_ORDER } from '../data/positions';
+import { ALL_NUMBERS, NUMBER_MEANINGS } from '../data/numbers';
+import { site } from '../config/site';
+---
+<BaseLayout title={site.name} description={site.description}>
+  <!-- ── Hero ─────────────────────────────────────────── -->
+  <section class="hero night stars glow">
+    <div class="container hero-grid">
+      <div class="hero-copy">
+        <p class="eyebrow">Pythagorean numerology · Free personal reading</p>
+        <h1>The quiet <em>mathematics</em> of who you are</h1>
+        <p class="lede">
+          Your name and date of birth hold six numbers. Discover what they traditionally reveal about your path, your
+          talents, your heart and the year ahead — in a reading written just for you.
+        </p>
+        <ul class="hero-points">
+          <li><span>6</span> core numbers, explained in depth</li>
+          <li><span>✦</span> Personal Year guidance, month by month</li>
+          <li><span>PDF</span> beautiful downloadable report</li>
+        </ul>
+      </div>
+      <div class="hero-form">
+        <HeroWheel class="hero-wheel-bg" />
+        <div class="calc-card hero-card">
+          <h2 class="hero-card-title">Begin your reading</h2>
+          <QuickReading client:load />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Six numbers ──────────────────────────────────── -->
+  <section class="section paper">
+    <div class="container">
+      <div class="section-head reveal">
+        <p class="eyebrow">What your reading contains</p>
+        <h2>Six numbers, <em>one portrait</em></h2>
+        <p class="lede">
+          Each number looks at you from a different angle. Read together, they form a portrait that is uniquely yours.
+        </p>
+      </div>
+      <ol class="positions">
+        {POSITION_ORDER.map((key, i) => {
+          const p = POSITIONS[key];
+          return (
+            <li class="position reveal" style={`transition-delay:${i * 60}ms`}>
+              <span class="position-index">{String(i + 1).padStart(2, '0')}</span>
+              <h3>{p.name}{p.alsoKnownAs && <small>{p.alsoKnownAs}</small>}</h3>
+              <p class="position-short">{p.short}</p>
+              <p class="muted">{p.description}</p>
+            </li>
+          );
+        })}
+      </ol>
+    </div>
+  </section>
+
+  <!-- ── How it works ─────────────────────────────────── -->
+  <section class="section paper-deep">
+    <div class="container how-grid">
+      <div class="section-head reveal">
+        <p class="eyebrow">How it works</p>
+        <h2>Ancient method, <em>instant</em> reading</h2>
+        <p class="lede">
+          Your numbers are calculated with the traditional Pythagorean system — the same method taught in classic
+          numerology books — and every step of the arithmetic is shown, so nothing is hidden.
+        </p>
+        <a class="link-arrow" href="/understanding-numerology/">How the numbers are calculated</a>
+      </div>
+      <ol class="steps">
+        <li class="step reveal">
+          <span class="step-num">i</span>
+          <div>
+            <h3>Share your name and birth date</h3>
+            <p class="muted">Your full birth name for the name numbers; your date of birth for your Life Path and cycles.</p>
+          </div>
+        </li>
+        <li class="step reveal">
+          <span class="step-num">ii</span>
+          <div>
+            <h3>See your numbers appear</h3>
+            <p class="muted">Letters become numbers, numbers are reduced, and master numbers 11, 22 and 33 are honoured.</p>
+          </div>
+        </li>
+        <li class="step reveal">
+          <span class="step-num">iii</span>
+          <div>
+            <h3>Read, reflect and keep</h3>
+            <p class="muted">Explore your profile, strengths, relationships, career and year ahead — then save it as a PDF.</p>
+          </div>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ── Numbers ──────────────────────────────────────── -->
+  <section class="section night stars">
+    <div class="container">
+      <div class="section-head center reveal">
+        <p class="eyebrow">The language of numbers</p>
+        <h2>Nine digits and <em>three masters</em></h2>
+        <p class="lede">Every number carries its own character. Explore what each one traditionally means.</p>
+      </div>
+      <ul class="number-tiles">
+        {ALL_NUMBERS.map((n) => {
+          const m = NUMBER_MEANINGS[n];
+          return (
+            <li class="reveal">
+              <a class:list={['number-tile', { master: n > 9 }]} href={`/meanings/${n}/`}>
+                <span class="tile-num">{n}</span>
+                <span class="tile-title">{m.title}</span>
+                <span class="tile-keys">{m.keywords.slice(0, 3).join(' · ')}</span>
+              </a>
+            </li>
+          );
+        })}
+      </ul>
+    </div>
+  </section>
+
+  <!-- ── About teaser ─────────────────────────────────── -->
+  <section class="section paper">
+    <div class="container about-teaser">
+      <div class="reveal"><Portrait size="md" /></div>
+      <div class="reveal stack">
+        <p class="eyebrow">Meet Dipikaa</p>
+        <h2>A guide for your <em>numbers</em></h2>
+        {site.about.intro ? (
+          <p class="lede">{site.about.intro}</p>
+        ) : (
+          <Placeholder field="about.intro" hint="A one-sentence introduction to Dipikaa, in her own words." />
+        )}
+        <div class="teaser-actions">
+          <a class="btn" href="/about/">About Dipikaa</a>
+          <a class="link-arrow" href="/contact/">Get in touch</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Promise ──────────────────────────────────────── -->
+  <section class="section tight paper-deep">
+    <div class="container">
+      <ul class="promises">
+        <li class="reveal">
+          <h3>Private by design</h3>
+          <p class="muted">Your reading is calculated in your own browser. Your name and birth date are never sent to a server, and are forgotten when you close the tab.</p>
+        </li>
+        <li class="reveal">
+          <h3>Rooted in tradition</h3>
+          <p class="muted">Calculations follow the classic Pythagorean method, and interpretations draw on long-standing numerological meanings — never random text.</p>
+        </li>
+        <li class="reveal">
+          <h3>Made for reflection</h3>
+          <p class="muted">Numerology is a symbolic language for self-reflection and inspiration, not a scientific prediction. Take what resonates.</p>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ── CTA ──────────────────────────────────────────── -->
+  <section class="section night stars glow cta-band">
+    <div class="container narrow center stack" style="--stack: var(--space-5)">
+      <p class="eyebrow">Your numbers are waiting</p>
+      <h2>What story do <em>your</em> numbers tell?</h2>
+      <p class="lede">It takes less than a minute, and it’s completely free.</p>
+      <div><a class="btn btn-gold" href="/calculator/">Calculate my numbers</a></div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .hero { position: relative; overflow: hidden; padding-block: var(--space-8) var(--space-9); }
+  .hero-grid { display: grid; gap: var(--space-7); align-items: center; }
+  @media (min-width: 60em) { .hero-grid { grid-template-columns: 1.1fr 1fr; gap: var(--space-8); } }
+  .hero-copy > * + * { margin-top: var(--space-5); }
+  .hero h1 { font-size: clamp(2.7rem, 1.6rem + 4.6vw, 5.4rem); }
+  .hero-points { list-style: none; padding: 0; display: grid; gap: var(--space-3); color: var(--mist-200); }
+  .hero-points li { display: flex; align-items: center; gap: var(--space-3); }
+  .hero-points span {
+    display: inline-grid; place-items: center; min-width: 2.6rem; height: 2.6rem; padding-inline: 0.4rem;
+    border: 1px solid rgb(220 192 133 / 0.4); border-radius: 999px;
+    font-family: var(--font-display); color: var(--gold-300); font-size: 1rem;
+  }
+  .hero-form { position: relative; }
+  .hero-form :global(.hero-wheel-bg) { position: absolute; inset: 50% auto auto 50%; width: 135%; max-width: none; transform: translate(-50%, -50%); opacity: 0.55; z-index: -1; pointer-events: none; }
+  .hero-card { background: rgb(10 15 44 / 0.72); }
+  .hero-card-title { font-size: var(--step-3); margin-bottom: var(--space-5); }
+
+  .positions { list-style: none; padding: 0; display: grid; gap: var(--space-4); }
+  @media (min-width: 40em) { .positions { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 64em) { .positions { grid-template-columns: repeat(3, 1fr); } }
+  .position { padding: var(--space-6) var(--space-5); border-top: 1px solid var(--cream-300); }
+  .position > * + * { margin-top: var(--space-2); }
+  .position-index { font-family: var(--font-display); font-size: 1rem; color: var(--gold-700); letter-spacing: 0.1em; }
+  .position h3 { font-size: var(--step-3); }
+  .position h3 small { display: block; font-family: var(--font-body); font-size: 0.75rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--ink-500); margin-top: 0.4rem; font-weight: 600; }
+  .position-short { font-family: var(--font-display); font-style: italic; font-size: var(--step-1); color: var(--gold-700); }
+
+  .how-grid { display: grid; gap: var(--space-7); }
+  @media (min-width: 60em) { .how-grid { grid-template-columns: 1fr 1fr; align-items: center; } .how-grid .section-head { margin-bottom: 0; } }
+  .steps { list-style: none; padding: 0; display: grid; gap: var(--space-4); }
+  .step { display: grid; grid-template-columns: 3.5rem 1fr; gap: var(--space-4); padding: var(--space-5); background: #fff; border-radius: var(--radius); border: 1px solid var(--cream-200); }
+  .step h3 { font-size: var(--step-2); margin-bottom: var(--space-1); }
+  .step-num { width: 3.5rem; height: 3.5rem; border-radius: 50%; display: grid; place-items: center; background: var(--night-900); color: var(--gold-300); font-family: var(--font-display); font-style: italic; font-size: 1.4rem; }
+
+  .number-tiles { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--space-3); }
+  @media (min-width: 40em) { .number-tiles { grid-template-columns: repeat(3, 1fr); } }
+  @media (min-width: 64em) { .number-tiles { grid-template-columns: repeat(4, 1fr); } }
+  .number-tile {
+    display: grid; gap: 0.2rem; height: 100%;
+    padding: var(--space-5);
+    border: 1px solid rgb(220 192 133 / 0.18);
+    border-radius: var(--radius);
+    text-decoration: none;
+    background: rgb(255 255 255 / 0.02);
+    transition: border-color 0.3s, background-color 0.3s, transform 0.3s var(--ease);
+  }
+  .number-tile:hover { border-color: var(--gold-400); background: rgb(220 192 133 / 0.06); transform: translateY(-3px); }
+  .number-tile.master { border-color: rgb(185 166 220 / 0.35); }
+  .tile-num { font-family: var(--font-display); font-size: clamp(2.8rem, 2rem + 3vw, 4rem); line-height: 1; color: var(--gold-300); }
+  .master .tile-num { color: var(--plum-300); }
+  .tile-title { font-family: var(--font-display); font-size: 1.3rem; color: #fff; }
+  .tile-keys { font-size: 0.78rem; color: var(--mist-400); }
+
+  .about-teaser { display: grid; gap: var(--space-7); align-items: center; }
+  @media (min-width: 52em) { .about-teaser { grid-template-columns: auto 1fr; gap: var(--space-8); } }
+  .teaser-actions { display: flex; flex-wrap: wrap; gap: var(--space-5); align-items: center; padding-top: var(--space-3); }
+
+  .promises { list-style: none; padding: 0; display: grid; gap: var(--space-6); }
+  @media (min-width: 52em) { .promises { grid-template-columns: repeat(3, 1fr); } }
+  .promises h3 { font-size: var(--step-2); margin-bottom: var(--space-2); }
+  .promises li { padding-top: var(--space-4); border-top: 2px solid var(--gold-500); }
+
+  .cta-band { overflow: hidden; }
+</style>

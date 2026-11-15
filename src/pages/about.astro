@@ -1,0 +1,171 @@
+---
+/**
+ * About Dipikaa. All personal content comes from src/config/site.ts —
+ * nothing about Dipikaa is written into this page.
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Portrait from '../components/Portrait.astro';
+import Placeholder from '../components/Placeholder.astro';
+import { site } from '../config/site';
+
+const { about, consultations } = site;
+const schema = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'AboutPage',
+    name: `About ${site.name}`,
+    mainEntity: { '@type': 'Person', name: site.name, ...(about.intro ? { description: about.intro } : {}) },
+  },
+];
+const show = (hasContent: boolean) => hasContent || site.showPlaceholders;
+---
+<BaseLayout
+  title={`About ${site.name}`}
+  description={about.intro ?? `Meet ${site.name} — learn about her background and her approach to numerology readings.`}
+  schema={schema}
+>
+  <section class="about-hero night stars glow">
+    <div class="container hero-grid">
+      <Portrait size="lg" />
+      <div class="stack" style="--stack: var(--space-5)">
+        <p class="eyebrow">About</p>
+        <h1>Meet <em>{site.name}</em></h1>
+        {about.intro ? (
+          <p class="lede">{about.intro}</p>
+        ) : (
+          <Placeholder field="about.intro" hint="A warm, one-sentence introduction to Dipikaa." />
+        )}
+        {about.portrait === null && (
+          <Placeholder field="about.portrait" hint="Optional: add a portrait photo to /public/images and set its path. The monogram is shown until then." />
+        )}
+      </div>
+    </div>
+  </section>
+
+  {show(about.story.length > 0) && (
+    <section class="section paper">
+      <div class="container two-col">
+        <div class="section-head">
+          <p class="eyebrow">Her story</p>
+          <h2>How the <em>journey</em> began</h2>
+        </div>
+        <div class="prose">
+          {about.story.length ? (
+            about.story.map((p, i) => <p class={i === 0 ? 'lede' : ''}>{p}</p>)
+          ) : (
+            <Placeholder field="about.story" hint="Dipikaa’s story in her own words — how she came to numerology and what it means to her. One paragraph per entry." />
+          )}
+        </div>
+      </div>
+    </section>
+  )}
+
+  {(show(about.background.length > 0) || show(about.approach.length > 0)) && (
+    <section class="section paper-deep">
+      <div class="container cards-2">
+        {show(about.background.length > 0) && (
+          <div class="card info-card">
+            <p class="eyebrow">Background</p>
+            <h2 class="h-card">Training &amp; experience</h2>
+            {about.background.length ? (
+              <ul class="mark-list star">{about.background.map((b) => <li>{b}</li>)}</ul>
+            ) : (
+              <Placeholder field="about.background" hint="Only real, verifiable details: training, qualifications, years of practice. Leave empty to hide this card." />
+            )}
+          </div>
+        )}
+        {show(about.approach.length > 0) && (
+          <div class="card info-card">
+            <p class="eyebrow">Approach</p>
+            <h2 class="h-card">How she reads</h2>
+            {about.approach.length ? (
+              about.approach.map((p) => <p>{p}</p>)
+            ) : (
+              <Placeholder field="about.approach" hint="How Dipikaa approaches a reading and what clients can expect." />
+            )}
+          </div>
+        )}
+      </div>
+    </section>
+  )}
+
+  {about.quote && (
+    <section class="section tight night stars">
+      <div class="container narrow center">
+        <blockquote class="big-quote"><p>“{about.quote}”</p><footer>— {site.name}</footer></blockquote>
+      </div>
+    </section>
+  )}
+
+  {show(consultations.offerings.length > 0 || !!consultations.intro) && (
+    <section class="section paper">
+      <div class="container">
+        <div class="section-head">
+          <p class="eyebrow">Consultations</p>
+          <h2>Personal <em>readings</em></h2>
+          {consultations.intro ? (
+            <p class="lede">{consultations.intro}</p>
+          ) : (
+            <Placeholder field="consultations.intro" hint="A short introduction to personal consultations with Dipikaa." />
+          )}
+        </div>
+        {consultations.offerings.length ? (
+          <ul class="offerings">
+            {consultations.offerings.map((o) => (
+              <li class="card">
+                <h3>{o.title}</h3>
+                {o.details && <p class="offer-details">{o.details}</p>}
+                <p class="muted">{o.description}</p>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <Placeholder field="consultations.offerings" hint="The readings or services Dipikaa offers — title, description and optional details such as duration or format." />
+        )}
+        <div class="offer-actions">
+          {consultations.bookingUrl && <a class="btn btn-gold" href={consultations.bookingUrl} rel="noopener" target="_blank">{consultations.bookingLabel}</a>}
+          <a class="btn" href="/contact/">Make an enquiry</a>
+        </div>
+      </div>
+    </section>
+  )}
+
+  <section class="section paper-deep">
+    <div class="container two-col">
+      <div class="section-head">
+        <p class="eyebrow">About this website</p>
+        <h2>A calm space for <em>reflection</em></h2>
+      </div>
+      <div class="prose">
+        <p>
+          The free calculator on this site uses the traditional Pythagorean method. Every number is calculated
+          transparently — you can open the working behind each result — and the interpretations draw on meanings
+          long associated with each number in numerology.
+        </p>
+        <p>
+          Readings are offered for self-reflection and inspiration. They describe tendencies and themes, never
+          certainties, and they are calculated privately in your own browser.
+        </p>
+        <p><a class="link-arrow" href="/calculator/">Try the calculator</a></p>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .about-hero { position: relative; overflow: hidden; padding-block: var(--space-8); }
+  .hero-grid { display: grid; gap: var(--space-7); align-items: center; }
+  @media (min-width: 52em) { .hero-grid { grid-template-columns: auto 1fr; gap: var(--space-9); } }
+  .two-col { display: grid; gap: var(--space-5); }
+  @media (min-width: 60em) { .two-col { grid-template-columns: 0.8fr 1.2fr; gap: var(--space-8); } }
+  .cards-2 { display: grid; gap: var(--space-4); }
+  @media (min-width: 52em) { .cards-2 { grid-template-columns: 1fr 1fr; } }
+  .info-card > * + * { margin-top: var(--space-4); }
+  .h-card { font-size: var(--step-3); }
+  .big-quote p { font-family: var(--font-display); font-style: italic; font-size: var(--step-3); color: #fff; line-height: 1.3; }
+  .big-quote footer { margin-top: var(--space-4); color: var(--gold-400); letter-spacing: 0.1em; }
+  .offerings { list-style: none; padding: 0; display: grid; gap: var(--space-4); grid-template-columns: repeat(auto-fill, minmax(min(100%, 18rem), 1fr)); }
+  .offerings h3 { font-size: var(--step-2); }
+  .offer-details { font-size: 0.8rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gold-700); margin-block: var(--space-2); }
+  .offer-actions { display: flex; flex-wrap: wrap; gap: var(--space-3); margin-top: var(--space-6); }
+</style>

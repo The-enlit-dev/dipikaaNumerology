@@ -1,0 +1,358 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import NumberRing from '../islands/reading/NumberRing.tsx';
+import { calculateChart, displayValue } from '../lib/numerology/calculate';
+import { PYTHAGOREAN } from '../lib/numerology/letters';
+import { POSITIONS, POSITION_ORDER } from '../data/positions';
+import { ALL_NUMBERS, NUMBER_MEANINGS } from '../data/numbers';
+import { PERSONAL_YEARS } from '../data/cycles';
+
+
+// A fictional worked example, calculated by the same engine the calculator uses.
+const EXAMPLE_NAME = 'Asha Priya Mehta';
+const EXAMPLE_DATE = { year: 1992, month: 3, day: 14 };
+const EXAMPLE_YEAR = 2026;
+const example = calculateChart(EXAMPLE_NAME, EXAMPLE_DATE, { year: EXAMPLE_YEAR });
+
+const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+const chartRows = [0, 1, 2].map((row) => letters.slice(row * 9, row * 9 + 9));
+
+const faqs = [
+  {
+    q: 'Which name should I use?',
+    a: 'Traditionally, the full name on your birth certificate — including middle names — is used for the core name numbers, because it is seen as the original “blueprint”. You can also calculate the name you use today to explore how your current name colours the way you express yourself.',
+  },
+  {
+    q: 'Why do some calculators give me a different Life Path?',
+    a: 'There are two common methods. This site reduces the month, day and year separately before adding them (the most widely taught approach). Some calculators add every digit at once. Usually both give the same answer; when they differ — most often around master numbers — your reading shows both, so you can see why.',
+  },
+  {
+    q: 'What if my name is written in another script?',
+    a: 'The Pythagorean system assigns values to the 26 letters of the Latin alphabet, so names should be entered in English letters, spelled the way you normally write them in English. Accents are removed automatically (é becomes E).',
+  },
+  {
+    q: 'Is the letter Y a vowel or a consonant?',
+    a: 'It depends on how it sounds. By default, Y counts as a consonant when it comes before a vowel (as in Maya or Priya) and as a vowel otherwise (as in Lynn or Vijay). You can override this in the calculator’s reading options.',
+  },
+  {
+    q: 'When does my Personal Year change?',
+    a: 'This site follows the common convention that Personal Years run with the calendar year, from 1 January to 31 December. Some numerologists prefer to change it on your birthday; the themes are the same either way.',
+  },
+  {
+    q: 'Can numerology predict the future?',
+    a: 'No. Numerology is a traditional symbolic practice, not a science. It offers themes and questions for reflection, and many people find it meaningful and inspiring — but it does not predict specific events or replace professional advice.',
+  },
+  {
+    q: 'Is my information stored?',
+    a: 'No. All calculations happen in your browser. Your details are kept only in this browser tab (so you can revisit your reading) and are erased when you close it. Nothing is sent to a server.',
+  },
+];
+
+const schema = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqs.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: 'Understanding Numerology: the six core numbers and how they are calculated',
+    about: 'Pythagorean numerology',
+  },
+];
+
+const toc = [
+  ['what', 'What is numerology?'],
+  ['chart', 'Letters to numbers'],
+  ['reduce', 'Reduction & master numbers'],
+  ['core', 'The six core numbers'],
+  ['cycle', 'The nine-year cycle'],
+  ['meanings', 'Number meanings'],
+  ['faq', 'Questions'],
+];
+---
+<BaseLayout
+  title="Understanding Numerology — How the Numbers Work"
+  description="A clear beginner’s guide to Pythagorean numerology: the letter chart, number reduction, master numbers 11, 22 and 33, the six core numbers with worked examples, and the nine-year Personal Year cycle."
+  schema={schema}
+  ogType="article"
+>
+  <section class="page-hero night stars glow">
+    <div class="container narrow center stack" style="--stack: var(--space-5)">
+      <p class="eyebrow">A beginner’s guide</p>
+      <h1>Understanding <em>numerology</em></h1>
+      <p class="lede">
+        How a name and a date become six meaningful numbers — explained step by step, with nothing hidden.
+      </p>
+      <nav aria-label="On this page">
+        <ul class="toc">
+          {toc.map(([id, label]) => <li><a class="chip" href={`#${id}`}>{label}</a></li>)}
+        </ul>
+      </nav>
+    </div>
+  </section>
+
+  <section id="what" class="section paper">
+    <div class="container two-col">
+      <div class="section-head">
+        <p class="eyebrow">Origins</p>
+        <h2>What is <em>numerology?</em></h2>
+      </div>
+      <div class="prose">
+        <p class="lede">
+          Numerology is the traditional study of the symbolic meaning of numbers, and of how the numbers drawn from a
+          person’s name and birth date can be read as a portrait of their character and life themes.
+        </p>
+        <p>
+          Many cultures have given numbers spiritual significance. The system used on this site is known as
+          <strong>Pythagorean</strong> numerology, named after the Greek philosopher Pythagoras, whose school taught
+          that numbers underlie the order of the universe. The modern method — converting letters to numbers and
+          reducing them to single digits — was developed and popularised by Western writers in the late nineteenth and
+          twentieth centuries, and it is the most widely used system today.
+        </p>
+        <p>
+          Other traditions exist, including the Chaldean system and the numerology practised within Indian traditions,
+          each with its own letter values and methods. They are not mixed here: every number on this site follows the
+          Pythagorean method consistently.
+        </p>
+        <p class="disclaimer">
+          Numerology is a symbolic and reflective practice rather than a science. Its value lies in the questions it
+          prompts and the perspective it offers.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section id="chart" class="section paper-deep">
+    <div class="container">
+      <div class="section-head">
+        <p class="eyebrow">Step one</p>
+        <h2>From letters to <em>numbers</em></h2>
+        <p class="lede">
+          Each letter takes the value of its position in the alphabet, counting 1 to 9 and starting again: A is 1, I is
+          9, J returns to 1.
+        </p>
+      </div>
+      <div class="letter-table" role="table" aria-label="Pythagorean letter values">
+        <div class="lt-row lt-head" role="row">
+          {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((n) => <span role="columnheader">{n}</span>)}
+        </div>
+        {chartRows.map((row) => (
+          <div class="lt-row" role="row">
+            {[0, 1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
+              <span role="cell" class:list={{ vowel: row[i] && 'AEIOU'.includes(row[i]) }}>
+                {row[i] ?? ''}
+              </span>
+            ))}
+          </div>
+        ))}
+      </div>
+      <p class="small muted table-note">
+        Vowels (highlighted) form the Soul Urge number; consonants form the Personality number. Y is treated as a vowel
+        when it sounds like one. For example, {example.nameParts[0].text} becomes
+        {' '}{example.nameParts[0].letters.map((l) => `${l.char} = ${PYTHAGOREAN[l.char]}`).join(', ')}.
+      </p>
+    </div>
+  </section>
+
+  <section id="reduce" class="section paper">
+    <div class="container two-col">
+      <div class="section-head">
+        <p class="eyebrow">Step two</p>
+        <h2>Reduction &amp; <em>master numbers</em></h2>
+      </div>
+      <div class="prose">
+        <p class="lede">Numbers are “reduced” by adding their digits together until a single digit remains.</p>
+        <div class="example-line">1992 → 1 + 9 + 9 + 2 = 21 → 2 + 1 = <strong>3</strong></div>
+        <p>
+          Three numbers are traditionally treated differently. <strong>11, 22 and 33</strong> are called
+          <em>master numbers</em>. When a calculation arrives at one of them, it stops there instead of reducing further,
+          because master numbers are believed to carry an intensified version of their root number’s energy.
+        </p>
+        <div class="master-row">
+          {[11, 22, 33].map((n) => (
+            <a class="master-item" href={`/meanings/${n}/`}>
+              <NumberRing value={n} isMaster size={92} tone="paper" animate={false} />
+              <span><strong>{n} · {NUMBER_MEANINGS[n].title}</strong>reduces to {n === 11 ? 2 : n === 22 ? 4 : 6}</span>
+            </a>
+          ))}
+        </div>
+        <p>
+          To let “hidden” master numbers appear, each part of a date or name is reduced separately before the parts are
+          added together. A birthday on the 29th, for example, becomes 2 + 9 = 11 and is kept as 11.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section id="core" class="section paper-deep">
+    <div class="container">
+      <div class="section-head">
+        <p class="eyebrow">Step three</p>
+        <h2>The six <em>core numbers</em></h2>
+        <p class="lede">
+          Worked examples for a fictional person, <strong>{EXAMPLE_NAME}</strong>, born on 14 March 1992. These are
+          calculated live by the same engine as the calculator.
+        </p>
+      </div>
+      <ol class="core-list">
+        {POSITION_ORDER.map((key) => {
+          const pos = POSITIONS[key];
+          const n = example[key];
+          return (
+            <li class="core-item" id={`core-${key}`}>
+              <div class="core-head">
+                <NumberRing value={n.value} isMaster={n.isMaster} size={96} tone="paper" animate={false} />
+                <div>
+                  <h3>{pos.name}{pos.alsoKnownAs && <small> · {pos.alsoKnownAs}</small>}</h3>
+                  <p class="core-short">{pos.short}</p>
+                </div>
+              </div>
+              <p>{pos.description}</p>
+              <p class="core-method"><strong>Method.</strong> {pos.method}</p>
+              <table class="working-table core-table">
+                <caption class="visually-hidden">Worked example for {pos.name}</caption>
+                <tbody>
+                  {n.working.map((w, i) => (
+                    <tr class:list={{ 'is-total': i === n.working.length - 1 && n.working.length > 1 }}>
+                      <th scope="row">{w.label}</th>
+                      <td>{w.detail}</td>
+                      <td class="working-result">{w.result}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              <p class="small muted">
+                Result: <strong>{displayValue(n)}</strong>
+                {key === 'personalYear' ? ` for ${EXAMPLE_YEAR}` : ''}
+                {n.note ? ` — ${n.note}` : ''}
+              </p>
+            </li>
+          );
+        })}
+      </ol>
+    </div>
+  </section>
+
+  <section id="cycle" class="section night stars glow">
+    <div class="container">
+      <div class="section-head">
+        <p class="eyebrow">Timing</p>
+        <h2>The nine-year <em>cycle</em></h2>
+        <p class="lede">
+          Life is traditionally seen as moving through repeating nine-year cycles. Each Personal Year has a
+          characteristic theme — from planting seeds in a 1 year to harvest in an 8 and completion in a 9.
+        </p>
+      </div>
+      <ol class="cycle-cards">
+        {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((n) => (
+          <li class="card on-night">
+            <span class="cy-num">{n}</span>
+            <h3>{PERSONAL_YEARS[n].title.replace(/^A Year of /, '')}</h3>
+            <p class="small muted">{PERSONAL_YEARS[n].preview.charAt(0).toUpperCase() + PERSONAL_YEARS[n].preview.slice(1)}.</p>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <section id="meanings" class="section paper">
+    <div class="container">
+      <div class="section-head">
+        <p class="eyebrow">Interpretation</p>
+        <h2>What each number <em>means</em></h2>
+      </div>
+      <ul class="meaning-links">
+        {ALL_NUMBERS.map((n) => (
+          <li>
+            <a href={`/meanings/${n}/`}>
+              <span class="ml-num">{n}</span>
+              <span><strong>{NUMBER_MEANINGS[n].title}</strong><small>{NUMBER_MEANINGS[n].keywords.slice(0, 3).join(', ')}</small></span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <section id="faq" class="section paper-deep">
+    <div class="container narrow">
+      <div class="section-head">
+        <p class="eyebrow">Questions</p>
+        <h2>Frequently <em>asked</em></h2>
+      </div>
+      <div class="faq">
+        {faqs.map((f) => (
+          <details>
+            <summary>{f.q}</summary>
+            <p>{f.a}</p>
+          </details>
+        ))}
+      </div>
+      <div class="faq-cta">
+        <a class="btn" href="/calculator/">Calculate my numbers</a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .page-hero { position: relative; overflow: hidden; padding-block: var(--space-8); }
+  .toc { list-style: none; padding: 0; display: flex; flex-wrap: wrap; justify-content: center; gap: var(--space-2); margin-top: var(--space-3); }
+  .toc .chip { text-decoration: none; min-height: 36px; }
+  .toc .chip:hover { background: rgb(220 192 133 / 0.12); }
+  section[id] { scroll-margin-top: 72px; }
+
+  .two-col { display: grid; gap: var(--space-5); }
+  @media (min-width: 60em) { .two-col { grid-template-columns: 0.8fr 1.2fr; gap: var(--space-8); } }
+
+  .letter-table { display: grid; gap: 4px; max-width: 46rem; }
+  .lt-row { display: grid; grid-template-columns: repeat(9, minmax(0, 1fr)); gap: 4px; }
+  .lt-row span { display: grid; place-items: center; aspect-ratio: 1 / 0.9; border-radius: var(--radius-sm); background: #fff; border: 1px solid var(--cream-200); font-family: var(--font-display); font-size: clamp(1.1rem, 0.8rem + 1.5vw, 1.8rem); }
+  .lt-head span { background: var(--night-900); color: var(--gold-300); border-color: var(--night-900); }
+  .lt-row span.vowel { background: rgb(201 164 92 / 0.18); border-color: rgb(201 164 92 / 0.5); }
+  .lt-row span:empty { background: transparent; border-style: dashed; }
+  .table-note { margin-top: var(--space-4); max-width: 46rem; }
+
+  .example-line { font-family: var(--font-display); font-size: var(--step-2); padding: var(--space-4) var(--space-5); background: var(--cream-100); border-radius: var(--radius); border-left: 3px solid var(--gold-500); }
+  .master-row { display: grid; gap: var(--space-3); }
+  @media (min-width: 40em) { .master-row { grid-template-columns: repeat(3, 1fr); } }
+  .master-item { display: flex; align-items: center; gap: var(--space-3); text-decoration: none; padding: var(--space-3); border-radius: var(--radius); border: 1px solid var(--cream-200); background: #fff; transition: border-color 0.3s; }
+  .master-item:hover { border-color: var(--gold-500); }
+  @media (min-width: 40em) { .master-item { flex-direction: column; text-align: center; } }
+  .master-item span { font-size: 0.85rem; color: var(--ink-500); }
+  .master-item strong { display: block; font-family: var(--font-display); font-size: 1.15rem; color: var(--ink-900); font-weight: 600; }
+
+  .core-list { list-style: none; padding: 0; display: grid; gap: var(--space-4); }
+  @media (min-width: 60em) { .core-list { grid-template-columns: 1fr 1fr; } }
+  .core-item { background: #fff; border: 1px solid var(--cream-200); border-radius: var(--radius); padding: var(--space-5); display: grid; gap: var(--space-3); align-content: start; }
+  .core-head { display: flex; gap: var(--space-4); align-items: center; }
+  .core-head h3 small { font-family: var(--font-body); font-size: 0.8rem; color: var(--ink-500); letter-spacing: 0.04em; }
+  .core-short { font-family: var(--font-display); font-style: italic; color: var(--gold-700); font-size: 1.15rem; }
+  .core-method { font-size: 0.92rem; color: var(--ink-700); }
+  .core-table { width: 100%; margin: 0; }
+
+  .cycle-cards { list-style: none; padding: 0; display: grid; gap: var(--space-3); }
+  @media (min-width: 36em) { .cycle-cards { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 52em) { .cycle-cards { grid-template-columns: repeat(3, 1fr); } }
+  .cycle-cards li > * + * { margin-top: var(--space-2); }
+  .cy-num { font-family: var(--font-display); font-size: 2.6rem; line-height: 1; color: var(--gold-300); }
+  .cycle-cards h3 { font-size: var(--step-1); }
+
+  .meaning-links { list-style: none; padding: 0; display: grid; gap: var(--space-2); grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr)); }
+  .meaning-links a { display: flex; gap: var(--space-3); align-items: center; padding: var(--space-3) var(--space-4); border: 1px solid var(--cream-200); border-radius: var(--radius); background: #fff; text-decoration: none; transition: border-color 0.3s; }
+  .meaning-links a:hover { border-color: var(--gold-500); }
+  .ml-num { font-family: var(--font-display); font-size: 2rem; color: var(--gold-700); min-width: 2.4rem; text-align: center; }
+  .meaning-links strong { display: block; font-family: var(--font-display); font-size: 1.15rem; font-weight: 600; }
+  .meaning-links small { color: var(--ink-500); }
+
+  .faq { display: grid; gap: var(--space-2); }
+  .faq details { background: #fff; border: 1px solid var(--cream-200); border-radius: var(--radius); }
+  .faq summary { cursor: pointer; padding: var(--space-4) var(--space-5); font-weight: 600; list-style: none; display: flex; justify-content: space-between; gap: var(--space-4); min-height: 48px; }
+  .faq summary::-webkit-details-marker { display: none; }
+  .faq summary::after { content: '+'; color: var(--gold-600); font-size: 1.3rem; line-height: 1; }
+  .faq details[open] summary::after { content: '–'; }
+  .faq details p { padding: 0 var(--space-5) var(--space-5); color: var(--ink-700); }
+  .faq-cta { margin-top: var(--space-6); text-align: center; }
+</style>

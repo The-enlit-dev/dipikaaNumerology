@@ -1,0 +1,23 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import HeroWheel from '../components/HeroWheel.astro';
+---
+<BaseLayout title="Page not found" noindex>
+  <section class="nf night stars glow">
+    <div class="container narrow center stack" style="--stack: var(--space-5)">
+      <div class="nf-wheel"><HeroWheel highlight={4} /></div>
+      <p class="eyebrow">Error 404</p>
+      <h1>This page is <em>off the chart</em></h1>
+      <p class="lede">The page you were looking for doesn’t exist — but your numbers do.</p>
+      <div class="nf-actions">
+        <a class="btn btn-gold" href="/calculator/">Calculate my numbers</a>
+        <a class="btn btn-ghost" href="/">Return home</a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+<style>
+  .nf { position: relative; overflow: hidden; padding-block: var(--space-8) var(--space-9); min-height: 70vh; }
+  .nf-wheel { width: min(220px, 60vw); margin-inline: auto; }
+  .nf-actions { display: flex; flex-wrap: wrap; gap: var(--space-3); justify-content: center; }
+</style>

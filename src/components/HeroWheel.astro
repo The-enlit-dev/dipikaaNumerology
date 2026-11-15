@@ -1,0 +1,68 @@
+---
+/**
+ * Decorative hero illustration: the nine-point number wheel with its
+ * nine-pointed star, slowly turning. Purely decorative (aria-hidden).
+ */
+import { nonagramPath, wheelPoint } from '../lib/geometry';
+interface Props { class?: string; highlight?: number }
+const { class: className, highlight = 7 } = Astro.props;
+const C = 200;
+const R = 150;
+const digits = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+const ticks = Array.from({ length: 72 }, (_, i) => i);
+---
+<div class:list={['hero-wheel', className]} aria-hidden="true">
+  <svg viewBox="0 0 400 400" focusable="false">
+    <defs>
+      <radialGradient id="hw-core" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#dcc085" stop-opacity="0.35" />
+        <stop offset="100%" stop-color="#dcc085" stop-opacity="0" />
+      </radialGradient>
+    </defs>
+    <circle cx={C} cy={C} r="60" fill="url(#hw-core)" />
+    <g class="hw-spin-slow">
+      <circle cx={C} cy={C} r={R + 30} class="hw-line faint" />
+      {ticks.map((i) => {
+        const a = (i / 72) * Math.PI * 2;
+        const r1 = R + 30;
+        const r2 = R + (i % 8 === 0 ? 22 : 26);
+        return <line x1={C + r1 * Math.cos(a)} y1={C + r1 * Math.sin(a)} x2={C + r2 * Math.cos(a)} y2={C + r2 * Math.sin(a)} class="hw-line faint" />;
+      })}
+    </g>
+    <g class="hw-spin">
+      <circle cx={C} cy={C} r={R * 0.58} class="hw-line faint dashed" />
+      <path d={nonagramPath(R * 0.58, C, C, 2)} class="hw-star faint" />
+    </g>
+    <g>
+      <circle cx={C} cy={C} r={R} class="hw-line" />
+      <path d={nonagramPath(R, C, C)} class="hw-star" />
+      {digits.map((d) => {
+        const p = wheelPoint(d, R, C, C);
+        return <circle cx={p.x} cy={p.y} r={d === highlight ? 6 : 3} class:list={['hw-node', { on: d === highlight }]} />;
+      })}
+    </g>
+    {digits.map((d) => {
+      const t = wheelPoint(d, R + 50, C, C);
+      return <text x={t.x} y={t.y + 7} text-anchor="middle" class:list={['hw-digit', { on: d === highlight }]}>{d}</text>;
+    })}
+    <circle cx={C} cy={C} r="3" class="hw-node on" />
+  </svg>
+</div>
+
+<style>
+  .hero-wheel { width: 100%; max-width: 520px; aspect-ratio: 1; margin-inline: auto; }
+  svg { width: 100%; height: 100%; overflow: visible; }
+  .hw-line { fill: none; stroke: rgb(220 192 133 / 0.55); stroke-width: 0.8; }
+  .hw-line.faint { stroke: rgb(220 192 133 / 0.22); }
+  .hw-line.dashed { stroke-dasharray: 2 6; }
+  .hw-star { fill: none; stroke: rgb(220 192 133 / 0.4); stroke-width: 0.7; }
+  .hw-star.faint { stroke: rgb(185 166 220 / 0.22); }
+  .hw-node { fill: rgb(220 192 133 / 0.7); }
+  .hw-node.on { fill: #ead8ad; filter: drop-shadow(0 0 6px rgb(234 216 173 / 0.9)); }
+  .hw-digit { font-family: var(--font-display); font-size: 22px; fill: rgb(217 220 240 / 0.55); }
+  .hw-digit.on { fill: #ead8ad; font-weight: 600; }
+  .hw-spin { transform-origin: 200px 200px; animation: spin 240s linear infinite; }
+  .hw-spin-slow { transform-origin: 200px 200px; animation: spin 600s linear infinite reverse; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @media (prefers-reduced-motion: reduce) { .hw-spin, .hw-spin-slow { animation: none; } }
+</style>
